@@ -75,11 +75,36 @@ public class AgendaControlador {
     }
 
     private void modificarContacto() {
-
+        mostrarContactos();
+        try {
+            System.out.println("Elija el numero del contacto a modificar");
+            int opcion = in.nextInt();
+            in.nextLine();
+            System.out.println("Ingrese el nuevo nombre");
+            String nuevoNombre = in.nextLine();
+            System.out.println("Ingrese el nuevo numero");
+            String nuevoNumero = in.nextLine();
+            agenda[opcion-1].setNombre(nuevoNombre);
+            agenda[opcion-1].setTelefono(nuevoNumero);
+            System.out.println("Contacto modificado con exito");
+        } catch (Exception e) {
+            System.out.println("Ingresa datos validos");
+        }
     }
 
     private void buscarContacto() {
-
+        System.out.println("Ingresa el nombre de usuario a buscar");
+        String usuario = in.nextLine();
+        boolean existeContacto = false;
+        for (Contacto contacto : agenda) {
+            if (contacto.getNombre().equalsIgnoreCase(usuario.trim())) {
+                System.out.println(contacto.toString());
+                existeContacto = true;
+            }
+        }
+        if(!existeContacto){
+            System.out.println("Parece que no hay ningun contacto con ese usuario");
+        }
     }
 
     private void agregarContacto() {
@@ -106,12 +131,12 @@ public class AgendaControlador {
         else{
             System.out.println("Ingresa datos correctos");
         }
-
+        ordenarAgenda();
  
     }
 
     private void ordenarAgenda(){
-
+        Arrays.sort(agenda);
     }
 
 }

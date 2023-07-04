@@ -20,8 +20,7 @@ public class AgendaTelefonica {
                 in.nextLine();
                 agendaControlador.opcionHandler(opcion);
             } catch (Exception e) {
-                System.out.println(e);
-                System.out.println("Ingresa una opción válida!");
+                System.out.println("Ingresa una opción válida!, presione enter para continuar");
                 in.next();
                 opcion = -1;
             }

@@ -17,6 +17,7 @@ public class AgendaTelefonica {
             try {
                 mostrarMenu();
                 opcion = in.nextInt();
+                in.nextLine();
                 agendaControlador.opcionHandler(opcion);
             } catch (Exception e) {
                 System.out.println(e);

@@ -7,131 +7,171 @@ import model.Contacto;
 import view.AgendaTelefonica;
 
 public class AgendaControlador {
-    private static int longitudAgenda = 1;
-    private static Contacto[] agenda = new Contacto[longitudAgenda];
-    private static int ultimoBorrado = -1;
+    private Contacto[] agenda = new Contacto[0];
+    private int numeroDeContactos = 0;
     private static Scanner in = new Scanner(System.in);
 
     public void opcionHandler(int opcion) {
-        
-            System.out.println("Longitud es " + longitudAgenda);
-            switch (opcion) {
-                case 1:
-                    agregarContacto();
-                    break;
-                case 2:
-                    buscarContacto();
-                    break;
-                case 3:
-                    modificarContacto();
-                    break;
-                case 4:
-                    eliminarContacto();
-                    break;
-                case 5:
-                    mostrarContactos();
-                    break;
-                case 6:
-                    vaciarAgenda();
-                    break;
+        switch (opcion) {
+            case 1:
+                agregarContacto();
+                break;
+            case 2:
+                buscarContacto();
+                break;
+            case 3:
+                modificarContacto();
+                break;
+            case 4:
+                eliminarContacto();
+                break;
+            case 5:
+                mostrarContactos();
+                break;
+            case 6:
+                vaciarAgenda();
+                break;
 
-                default:
-                    break;
-            }
-        
+            default:
+                break;
+        }
+        AgendaTelefonica.mostrarMensaje("");
     }
 
     private void vaciarAgenda() {
-        agenda = new Contacto[1];
-        longitudAgenda = 1;
-        ultimoBorrado = -1;
+        Contacto[] nuevaAgenda = new Contacto[0];
+        numeroDeContactos = 0;
+        agenda = nuevaAgenda;
+        AgendaTelefonica.mostrarMensaje("## Agenda vaciada con exito");
+
     }
 
     private void mostrarContactos() {
-        for (int i = 0; i < longitudAgenda; i++) {
-            AgendaTelefonica.mostrarRespuestaDePeticion("Contacto #" + (i+1) + " " + agenda[i].toString());
+        if (numeroDeContactos == 0) {
+            AgendaTelefonica.mostrarMensaje("## La agenda esta vacia");
+            return;
+        }
+        int i = 1;
+        AgendaTelefonica.mostrarMensaje("  ## CONTACTOS ##");
+        for (Contacto contacto : agenda) {
+            AgendaTelefonica.mostrarMensaje("   $ Contacto " + i + ": " + contacto.toString());
+            i++;
         }
 
     }
 
     private void eliminarContacto() {
-        System.out.println("Digita el nombre del contacto a borrar");
-        String nombre = in.nextLine();
-        Contacto[] nuevaAgenda = new Contacto[10];
-        for (int i = 0; i < longitudAgenda; i++) {
-            if (!agenda[i].getNombre().equalsIgnoreCase(nombre)) {
-                nuevaAgenda[i] = agenda[i];
-            } else {
-                AgendaTelefonica.mostrarRespuestaDePeticion("El contacto borrado es : " + agenda[i].toString());
-                longitudAgenda--;
-            }
-        }
-        agenda = nuevaAgenda;
-        ordenarAgenda();
-        return;
+        mostrarContactos();
+        try {
+            AgendaTelefonica.mostrarMensaje("# Ingrese el indice del contacto a eliminar");
+            int opcion = in.nextInt();
+            in.nextLine();
+            int i = 0;
 
+            if (opcion < 1 || opcion > numeroDeContactos) {
+                AgendaTelefonica.mostrarMensaje("## Selecciona un numero valido");
+                return;
+            }
+
+            Contacto[] nuevaAgenda = new Contacto[numeroDeContactos - 1];
+            for (Contacto contacto : agenda) {
+                if (i == opcion - 1) {
+                    AgendaTelefonica.mostrarMensaje("## Contacto eliminado!");
+                    numeroDeContactos--;
+                    opcion = -1;
+                } else {
+                    nuevaAgenda[i] = contacto;
+                    i++;
+                }
+            }
+
+            agenda = nuevaAgenda;
+            ordenarAgenda();
+
+        } catch (Exception e) {
+            AgendaTelefonica.mostrarMensaje("## Hubo un error");
+            in.nextLine();
+        }
     }
 
     private void modificarContacto() {
-        System.out.println("Digita el nombre del contacto a modificar");
-        String nombre = in.nextLine();
-        for (int i = 0; i < longitudAgenda; i++) {
-            Contacto contactoActual = agenda[i];
-            if (contactoActual.getNombre().equalsIgnoreCase(nombre)) {
-                AgendaTelefonica.mostrarRespuestaDePeticion("El contacto que modificaras es : " + contactoActual.toString());
-                AgendaTelefonica.mostrarMensaje("Ingresa nuevo nombre");
-                String nuevoNombre = in.nextLine().trim();
-                AgendaTelefonica.mostrarMensaje("Ingresa nuevo numero");
-                String nuevoNumero = in.nextLine().trim();
-                if (nuevoNombre.length() > 0 && nuevoNumero.length() == 8) {
-                    agenda[i].setNombre(nuevoNombre);
-                    agenda[i].setTelefono(nuevoNumero);
-                } else {
-                    AgendaTelefonica.mostrarMensaje("Ingresa valores validos");
-                }
-                ordenarAgenda();
+        mostrarContactos();
+        try {
+            AgendaTelefonica.mostrarMensaje("# Elija el indice del contacto a modificar");
+            int opcion = in.nextInt();
+            in.nextLine();
+            if (opcion < 1 || opcion > numeroDeContactos) {
+                AgendaTelefonica.mostrarMensaje("## Selecciona un numero valido");
                 return;
-                
             }
+            AgendaTelefonica.mostrarMensaje("# Ingrese el nuevo nombre");
+            String nuevoNombre = in.nextLine();
+            AgendaTelefonica.mostrarMensaje("# Ingrese el nuevo numero");
+            String nuevoNumero = in.nextLine();
+            if (nuevoNombre.trim().length() >= 1 && nuevoNumero.trim().length() == 8) {
+                agenda[opcion - 1].setNombre(nuevoNombre);
+                agenda[opcion - 1].setTelefono(nuevoNumero);
+                AgendaTelefonica.mostrarMensaje("## Contacto modificado con exito");
+            } else{
+                AgendaTelefonica.mostrarMensaje("## Debe ingresar un nombre y un telefono de 8 digitos");
+            }
+
+        } catch (Exception e) {
+            AgendaTelefonica.mostrarMensaje("## Ingresa datos validos");
+            in.nextLine();
         }
+
+        ordenarAgenda();
     }
 
     private void buscarContacto() {
-        System.out.println("Digita el nombre del contacto a buscar");
-        String nombre = in.nextLine();
-        for (int i = 0; i < longitudAgenda; i++) {
-            Contacto contactoActual = agenda[i];
-            if (contactoActual.getNombre().equalsIgnoreCase(nombre)) {
-                AgendaTelefonica.mostrarRespuestaDePeticion("El contacto es : " + contactoActual.toString());
-                return;
+        AgendaTelefonica.mostrarMensaje("# Ingresa el nombre de usuario a buscar");
+        String usuario = in.nextLine();
+        boolean existeContacto = false;
+
+        for (Contacto contacto : agenda) {
+            if (contacto.getNombre().equalsIgnoreCase(usuario.trim())) {
+                AgendaTelefonica.mostrarMensaje(" # Contacto encontrado: " + contacto.toString());
+                existeContacto = true;
             }
         }
-        AgendaTelefonica.mostrarMensaje("No hay contacto encontrado");
-        return;
+
+        if (!existeContacto) {
+            AgendaTelefonica.mostrarMensaje("## Parece que no hay ningun contacto con ese usuario");
+        }
+
     }
 
     private void agregarContacto() {
-        // try {
-        AgendaTelefonica.mostrarMensaje("Digita el nombre");
-        String nombre = in.nextLine();
-        AgendaTelefonica.mostrarMensaje("Digita el numero de telefono sin guion");
-        String telefono = in.nextLine();
-        if (telefono.length() == 8 && nombre.length() > 0) {
-            Contacto nuevoContacto = new Contacto(nombre, telefono);
-            agenda[longitudAgenda] = nuevoContacto;
-            longitudAgenda++;
-            ordenarAgenda();
+        if (numeroDeContactos == 10) {
+            AgendaTelefonica.mostrarMensaje("## La agenda esta llena");
+            return;
+        }
+
+        AgendaTelefonica.mostrarMensaje("# Ingresa su usuario");
+        String nuevoUsuario = in.nextLine();
+        AgendaTelefonica.mostrarMensaje("# Ingresa su telefono sin guion (8 digitos)");
+        String nuevoTelefono = in.nextLine();
+
+        if (nuevoUsuario.trim().length() >= 1 && nuevoTelefono.trim().length() == 8) {
+            Contacto nuevoContacto = new Contacto(nuevoUsuario, nuevoTelefono);
+            numeroDeContactos++;
+            Contacto[] nuevaAgenda = new Contacto[numeroDeContactos];
+            nuevaAgenda[0] = nuevoContacto;
+            int aux = 1;
+            for (Contacto contacto : agenda) {
+                nuevaAgenda[aux] = contacto;
+                aux++;
+            }
+            agenda = nuevaAgenda;
 
         } else {
-            AgendaTelefonica.mostrarMensaje("Ingrese un numero de telefono de 8 digitos");
+            AgendaTelefonica.mostrarMensaje("## Debe ingresar un nombre y un telefono de 8 digitos");
         }
-        // } catch (Exception e) {
-        // System.out.println("Ingresa datos validos");
-        //
+        ordenarAgenda();
     }
 
-    private void ordenarAgenda(){
+    private void ordenarAgenda() {
         Arrays.sort(agenda);
     }
-
 }

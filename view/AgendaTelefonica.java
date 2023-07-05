@@ -16,12 +16,14 @@ public class AgendaTelefonica {
         do {
             try {
                 mostrarMenu();
+                System.out.println();
+                System.out.print("# Su opcion: ");
                 opcion = in.nextInt();
                 in.nextLine();
                 agendaControlador.opcionHandler(opcion);
             } catch (Exception e) {
-                System.out.println("Ingresa una opción válida!, presione enter para continuar");
-                in.next();
+                System.out.println("Ingresa una opción válida!");
+                in.nextLine();
                 opcion = -1;
             }
 
@@ -31,8 +33,8 @@ public class AgendaTelefonica {
 
     public void mostrarMenu() {
         System.out.println("=====================================");
-        System.out.println("# ¿Qué operación quieres realizar? " +
-                " \n# 1. Añadir contacto \n# 2. Buscar contacto \n# 3. Modificar contacto " +
+        System.out.println("# ¿Que operación quieres realizar? " +
+                " \n# 1. Agregar contacto \n# 2. Buscar contacto \n# 3. Modificar contacto " +
                 "\n# 4. Eliminar contacto \n# 5. Mostrar contactos " +
                 " \n# 6. Vaciar contactos \n# 7. Salir");
         System.out.println("=====================================");

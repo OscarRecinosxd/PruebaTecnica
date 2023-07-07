@@ -31,14 +31,16 @@ public class AgendaControlador {
             case 6:
                 vaciarAgenda();
                 break;
-
             default:
+                AgendaTelefonica.mostrarMensaje("Ingresa un numero valido");
                 break;
         }
-        AgendaTelefonica.mostrarMensaje("");
     }
 
     private void vaciarAgenda() {
+        if (estaLaAgendaVacia()) {
+            return;
+        }
         Contacto[] nuevaAgenda = new Contacto[0];
         numeroDeContactos = 0;
         agenda = nuevaAgenda;
@@ -47,12 +49,11 @@ public class AgendaControlador {
     }
 
     private void mostrarContactos() {
-        if (numeroDeContactos == 0) {
-            AgendaTelefonica.mostrarMensaje("## La agenda esta vacia");
+        if (estaLaAgendaVacia()) {
             return;
         }
         int i = 1;
-        AgendaTelefonica.mostrarMensaje("  ## CONTACTOS ##");
+        AgendaTelefonica.mostrarMensaje("  ### CONTACTOS ###");
         for (Contacto contacto : agenda) {
             AgendaTelefonica.mostrarMensaje("   $ Contacto " + i + ": " + contacto.toString());
             i++;
@@ -61,6 +62,9 @@ public class AgendaControlador {
     }
 
     private void eliminarContacto() {
+        if (estaLaAgendaVacia()) {
+            return;
+        }
         mostrarContactos();
         try {
             AgendaTelefonica.mostrarMensaje("# Ingrese el indice del contacto a eliminar");
@@ -69,14 +73,14 @@ public class AgendaControlador {
             int i = 0;
 
             if (opcion < 1 || opcion > numeroDeContactos) {
-                AgendaTelefonica.mostrarMensaje("## Selecciona un numero valido");
+                AgendaTelefonica.mostrarMensaje("### Selecciona un numero valido");
                 return;
             }
 
             Contacto[] nuevaAgenda = new Contacto[numeroDeContactos - 1];
             for (Contacto contacto : agenda) {
                 if (i == opcion - 1) {
-                    AgendaTelefonica.mostrarMensaje("## Contacto eliminado!");
+                    AgendaTelefonica.mostrarMensaje("# Contacto eliminado!");
                     numeroDeContactos--;
                     opcion = -1;
                 } else {
@@ -89,72 +93,66 @@ public class AgendaControlador {
             ordenarAgenda();
 
         } catch (Exception e) {
-            AgendaTelefonica.mostrarMensaje("## Hubo un error");
+            AgendaTelefonica.mostrarMensaje("### Hubo un error");
             in.nextLine();
         }
     }
 
     private void modificarContacto() {
+        if (estaLaAgendaVacia()) {
+            return;
+        }
         mostrarContactos();
         try {
             AgendaTelefonica.mostrarMensaje("# Elija el indice del contacto a modificar");
             int opcion = in.nextInt();
             in.nextLine();
             if (opcion < 1 || opcion > numeroDeContactos) {
-                AgendaTelefonica.mostrarMensaje("## Selecciona un numero valido");
+                AgendaTelefonica.mostrarMensaje("### Selecciona un numero valido");
                 return;
             }
-            AgendaTelefonica.mostrarMensaje("# Ingrese el nuevo nombre");
-            String nuevoNombre = in.nextLine();
-            AgendaTelefonica.mostrarMensaje("# Ingrese el nuevo numero");
-            String nuevoNumero = in.nextLine();
-            if (nuevoNombre.trim().length() >= 1 && nuevoNumero.trim().length() == 8) {
-                agenda[opcion - 1].setNombre(nuevoNombre);
-                agenda[opcion - 1].setTelefono(nuevoNumero);
-                AgendaTelefonica.mostrarMensaje("## Contacto modificado con exito");
-            } else{
-                AgendaTelefonica.mostrarMensaje("## Debe ingresar un nombre y un telefono de 8 digitos");
-            }
 
+            Contacto contactoEditado = crearEditarContactoHandler();
+            if (contactoEditado.getNombre().length() > 0 && contactoEditado.getTelefono().length() == 8){
+                agenda[opcion - 1] = contactoEditado;
+                AgendaTelefonica.mostrarMensaje("# Contacto modificado con exito");
+                ordenarAgenda();
+            } 
         } catch (Exception e) {
-            AgendaTelefonica.mostrarMensaje("## Ingresa datos validos");
+            AgendaTelefonica.mostrarMensaje("### Ingresa datos validos");
             in.nextLine();
         }
-
-        ordenarAgenda();
     }
 
     private void buscarContacto() {
+        if (estaLaAgendaVacia()) {
+            return;
+        }
         AgendaTelefonica.mostrarMensaje("# Ingresa el nombre de usuario a buscar");
         String usuario = in.nextLine();
         boolean existeContacto = false;
 
         for (Contacto contacto : agenda) {
             if (contacto.getNombre().equalsIgnoreCase(usuario.trim())) {
-                AgendaTelefonica.mostrarMensaje(" # Contacto encontrado: " + contacto.toString());
+                AgendaTelefonica.mostrarMensaje("# Contacto encontrado: " + contacto.toString());
                 existeContacto = true;
             }
         }
 
         if (!existeContacto) {
-            AgendaTelefonica.mostrarMensaje("## Parece que no hay ningun contacto con ese usuario");
+            AgendaTelefonica.mostrarMensaje("### Parece que no hay ningun contacto con ese usuario");
         }
 
     }
 
     private void agregarContacto() {
         if (numeroDeContactos == 10) {
-            AgendaTelefonica.mostrarMensaje("## La agenda esta llena");
+            AgendaTelefonica.mostrarMensaje("### La agenda esta llena");
             return;
         }
 
-        AgendaTelefonica.mostrarMensaje("# Ingresa su usuario");
-        String nuevoUsuario = in.nextLine();
-        AgendaTelefonica.mostrarMensaje("# Ingresa su telefono sin guion (8 digitos)");
-        String nuevoTelefono = in.nextLine();
-
-        if (nuevoUsuario.trim().length() >= 1 && nuevoTelefono.trim().length() == 8) {
-            Contacto nuevoContacto = new Contacto(nuevoUsuario, nuevoTelefono);
+        Contacto nuevoContacto = crearEditarContactoHandler();
+        if (nuevoContacto.getNombre().length() > 0 && nuevoContacto.getTelefono().length() == 8) {
             numeroDeContactos++;
             Contacto[] nuevaAgenda = new Contacto[numeroDeContactos];
             nuevaAgenda[0] = nuevoContacto;
@@ -164,14 +162,55 @@ public class AgendaControlador {
                 aux++;
             }
             agenda = nuevaAgenda;
-
-        } else {
-            AgendaTelefonica.mostrarMensaje("## Debe ingresar un nombre y un telefono de 8 digitos");
+            AgendaTelefonica.mostrarMensaje("# Contacto agregado");
+            ordenarAgenda();
         }
-        ordenarAgenda();
     }
 
     private void ordenarAgenda() {
         Arrays.sort(agenda);
+    }
+
+    private Contacto crearEditarContactoHandler() {
+        Contacto contacto = new Contacto("", "");
+        AgendaTelefonica.mostrarMensaje("# Ingresa su usuario");
+        String nombreContacto = in.nextLine();
+        if (!esNombreValido(nombreContacto)) {
+            return contacto;
+        }
+        AgendaTelefonica.mostrarMensaje("# Ingresa su telefono sin guion (8 digitos)");
+        String numeroTelefono = in.nextLine();
+        if (!esNumeroTelefonicoValido(numeroTelefono)) {
+            return contacto;
+        }
+        contacto.setNombre(nombreContacto.toUpperCase());
+        contacto.setTelefono(numeroTelefono);
+        return contacto;
+    }
+
+    private boolean esNumeroTelefonicoValido(String numero) {
+        if (numero.trim().matches("[0-9]+") && numero.trim().length() == 8) {
+            return true;
+        }
+        AgendaTelefonica.mostrarMensaje("### Telefono invalido, debe tener 8 digitos");
+        return false;
+    }
+
+    private boolean esNombreValido(String nombre) {
+        if (nombre.trim().length() > 0) {
+            return true;
+        }
+        AgendaTelefonica.mostrarMensaje("### Nombre invalido, no debe estar en blanco");
+        return false;
+    }
+
+    private boolean estaLaAgendaVacia() {
+        if (numeroDeContactos == 0) {
+            AgendaTelefonica.mostrarMensaje("### La agenda esta vacia");
+            return true;
+        } else {
+            return false;
+        }
+
     }
 }

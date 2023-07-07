@@ -22,7 +22,7 @@ public class AgendaTelefonica {
                 in.nextLine();
                 agendaControlador.opcionHandler(opcion);
             } catch (Exception e) {
-                System.out.println("Ingresa una opción válida!");
+                System.out.println("Ingresa una opcion valida!");
                 in.nextLine();
                 opcion = -1;
             }
@@ -33,7 +33,7 @@ public class AgendaTelefonica {
 
     public void mostrarMenu() {
         System.out.println("=====================================");
-        System.out.println("# ¿Que operación quieres realizar? " +
+        System.out.println("# Que operacion quieres realizar? " +
                 " \n# 1. Agregar contacto \n# 2. Buscar contacto \n# 3. Modificar contacto " +
                 "\n# 4. Eliminar contacto \n# 5. Mostrar contactos " +
                 " \n# 6. Vaciar contactos \n# 7. Salir");

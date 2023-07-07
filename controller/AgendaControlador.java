@@ -175,9 +175,17 @@ public class AgendaControlador {
         Contacto contacto = new Contacto("", "");
         AgendaTelefonica.mostrarMensaje("# Ingresa su usuario");
         String nombreContacto = in.nextLine();
+
         if (!esNombreValido(nombreContacto)) {
             return contacto;
         }
+        for (Contacto c : agenda) {
+            if (c.getNombre().equalsIgnoreCase(nombreContacto)) {
+                AgendaTelefonica.mostrarMensaje("## Ya hay un registro con ese nombre, continuando...");
+                break;
+            }
+        }
+
         AgendaTelefonica.mostrarMensaje("# Ingresa su telefono sin guion (8 digitos)");
         String numeroTelefono = in.nextLine();
         if (!esNumeroTelefonicoValido(numeroTelefono)) {
